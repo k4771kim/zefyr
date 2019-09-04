@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'controller.dart';
 import 'editor.dart';
-import 'image.dart';
 import 'mode.dart';
-import 'toolbar.dart';
 
 /// Zefyr editor with material design decorations.
 class ZefyrField extends StatefulWidget {
@@ -17,8 +15,6 @@ class ZefyrField extends StatefulWidget {
   final FocusNode focusNode;
   final bool autofocus;
   final ZefyrMode mode;
-  final ZefyrToolbarDelegate toolbarDelegate;
-  final ZefyrImageDelegate imageDelegate;
   final ScrollPhysics physics;
 
   const ZefyrField({
@@ -29,8 +25,6 @@ class ZefyrField extends StatefulWidget {
     this.focusNode,
     this.autofocus: false,
     this.mode,
-    this.toolbarDelegate,
-    this.imageDelegate,
     this.physics,
   }) : super(key: key);
 
@@ -47,8 +41,6 @@ class _ZefyrFieldState extends State<ZefyrField> {
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       mode: widget.mode ?? ZefyrMode.edit,
-      toolbarDelegate: widget.toolbarDelegate,
-      imageDelegate: widget.imageDelegate,
       physics: widget.physics,
     );
 

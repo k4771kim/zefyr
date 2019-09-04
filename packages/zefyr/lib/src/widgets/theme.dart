@@ -61,6 +61,7 @@ class ZefyrThemeData {
   final BlockTheme blockTheme;
   final Color selectionColor;
   final Color cursorColor;
+  final TextStyle codeStyle;
 
   /// Size of indentation for blocks.
   final double indentSize;
@@ -76,12 +77,14 @@ class ZefyrThemeData {
     );
     final padding = const EdgeInsets.only(bottom: 16.0);
     final boldStyle = new TextStyle(fontWeight: FontWeight.bold);
+    final codeStyle = new TextStyle(color:Colors.red);
     final italicStyle = new TextStyle(fontStyle: FontStyle.italic);
     final linkStyle =
         TextStyle(color: Colors.blue, decoration: TextDecoration.underline);
 
     return new ZefyrThemeData(
       boldStyle: boldStyle,
+      codeStyle:codeStyle,
       italicStyle: italicStyle,
       linkStyle: linkStyle,
       paragraphTheme:
@@ -106,11 +109,13 @@ class ZefyrThemeData {
     this.cursorColor,
     this.indentSize,
     this.toolbarTheme,
+    this.codeStyle
   });
 
   ZefyrThemeData copyWith({
     TextStyle textStyle,
     TextStyle boldStyle,
+    TextStyle codeStyle,
     TextStyle italicStyle,
     TextStyle linkStyle,
     StyleTheme paragraphTheme,
@@ -132,12 +137,14 @@ class ZefyrThemeData {
       cursorColor: cursorColor ?? this.cursorColor,
       indentSize: indentSize ?? this.indentSize,
       toolbarTheme: toolbarTheme ?? this.toolbarTheme,
+      codeStyle:codeStyle??this.codeStyle
     );
   }
 
   ZefyrThemeData merge(ZefyrThemeData other) {
     return copyWith(
       boldStyle: other.boldStyle,
+      codeStyle:other.codeStyle,
       italicStyle: other.italicStyle,
       linkStyle: other.linkStyle,
       paragraphTheme: other.paragraphTheme,

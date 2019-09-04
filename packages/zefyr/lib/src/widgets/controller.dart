@@ -17,9 +17,7 @@ const TextSelection _kZeroSelection = const TextSelection.collapsed(
 enum FocusOwner {
   /// Current owner is the editor.
   editor,
-
-  /// Current owner is the toolbar.
-  toolbar,
+toolbar,
 
   /// No focus owner.
   none,

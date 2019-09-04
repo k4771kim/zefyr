@@ -93,7 +93,6 @@ class _FullPageEditorScreenState extends State<FullPageEditorScreen> {
             controller: _controller,
             focusNode: _focusNode,
             mode: _editing ? ZefyrMode.edit : ZefyrMode.select,
-            imageDelegate: new CustomImageDelegate(),
           ),
         ),
       ),

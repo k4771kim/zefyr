@@ -22,7 +22,6 @@ class EditorSandBox {
     NotusDocument document,
     ZefyrThemeData theme,
     bool autofocus: false,
-    ZefyrImageDelegate imageDelegate,
   }) {
     focusNode ??= FocusNode();
     document ??= NotusDocument.fromDelta(delta);

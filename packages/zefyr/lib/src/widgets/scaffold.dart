@@ -19,32 +19,14 @@ class ZefyrScaffold extends StatefulWidget {
 }
 
 class ZefyrScaffoldState extends State<ZefyrScaffold> {
-  WidgetBuilder _toolbarBuilder;
-
-  void showToolbar(WidgetBuilder builder) {
-    setState(() {
-      _toolbarBuilder = builder;
-    });
-  }
-
-  void hideToolbar() {
-    if (_toolbarBuilder != null) {
-      setState(() {
-        _toolbarBuilder = null;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final toolbar =
-        (_toolbarBuilder == null) ? Container() : _toolbarBuilder(context);
     return _ZefyrScaffoldAccess(
       scaffold: this,
       child: Column(
         children: <Widget>[
           Expanded(child: widget.child),
-          toolbar,
         ],
       ),
     );

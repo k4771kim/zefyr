@@ -5,7 +5,6 @@ import 'package:notus/notus.dart';
 import 'controller.dart';
 import 'cursor_timer.dart';
 import 'editor.dart';
-import 'image.dart';
 import 'mode.dart';
 import 'render_context.dart';
 import 'view.dart';
@@ -25,10 +24,9 @@ class ZefyrScope extends ChangeNotifier {
   /// Creates a view-only scope.
   ///
   /// Normally used in [ZefyrView].
-  ZefyrScope.view({ZefyrImageDelegate imageDelegate})
+  ZefyrScope.view()
       : isEditable = false,
-        _mode = ZefyrMode.view,
-        _imageDelegate = imageDelegate;
+        _mode = ZefyrMode.view;
 
   /// Creates editable scope.
   ///
@@ -38,7 +36,6 @@ class ZefyrScope extends ChangeNotifier {
     @required ZefyrController controller,
     @required FocusNode focusNode,
     @required FocusScopeNode focusScope,
-    ZefyrImageDelegate imageDelegate,
   })  : assert(mode != null),
         assert(controller != null),
         assert(focusNode != null),
@@ -46,7 +43,6 @@ class ZefyrScope extends ChangeNotifier {
         isEditable = true,
         _mode = mode,
         _controller = controller,
-        _imageDelegate = imageDelegate,
         _focusNode = focusNode,
         _focusScope = focusScope,
         _cursorTimer = CursorTimer(),
@@ -61,15 +57,6 @@ class ZefyrScope extends ChangeNotifier {
     final ZefyrScopeAccess widget =
         context.inheritFromWidgetOfExactType(ZefyrScopeAccess);
     return widget.scope;
-  }
-
-  ZefyrImageDelegate _imageDelegate;
-  ZefyrImageDelegate get imageDelegate => _imageDelegate;
-  set imageDelegate(ZefyrImageDelegate value) {
-    if (_imageDelegate != value) {
-      _imageDelegate = value;
-      notifyListeners();
-    }
   }
 
   ZefyrMode _mode;

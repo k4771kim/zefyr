@@ -6,17 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:notus/notus.dart';
 
-import 'code.dart';
 import 'common.dart';
 import 'controller.dart';
 import 'cursor_timer.dart';
 import 'editor.dart';
-import 'image.dart';
 import 'input.dart';
-import 'list.dart';
 import 'mode.dart';
 import 'paragraph.dart';
-import 'quote.dart';
 import 'render_context.dart';
 import 'scope.dart';
 import 'selection.dart';
@@ -34,7 +30,6 @@ class ZefyrEditableText extends StatefulWidget {
     Key key,
     @required this.controller,
     @required this.focusNode,
-    @required this.imageDelegate,
     this.selectionControls,
     this.autofocus: true,
     this.mode: ZefyrMode.edit,
@@ -50,7 +45,6 @@ class ZefyrEditableText extends StatefulWidget {
 
   /// Controls whether this editor has keyboard focus.
   final FocusNode focusNode;
-  final ZefyrImageDelegate imageDelegate;
 
   /// Whether this text field should focus itself if nothing else is already
   /// focused.
@@ -227,27 +221,12 @@ class _ZefyrEditableTextState extends State<ZefyrEditableText>
 
   Widget _defaultChildBuilder(BuildContext context, Node node) {
     if (node is LineNode) {
-      if (node.hasEmbed) {
-        return RawZefyrLine(node: node);
-      } else if (node.style.contains(NotusAttribute.heading)) {
-        return ZefyrHeading(node: node);
-      }
+ 
       return ZefyrParagraph(node: node);
     }
 
-    final BlockNode block = node;
-    final blockStyle = block.style.get(NotusAttribute.block);
-    if (blockStyle == NotusAttribute.block.code) {
-      return ZefyrCode(node: block);
-    } else if (blockStyle == NotusAttribute.block.bulletList) {
-      return ZefyrList(node: block);
-    } else if (blockStyle == NotusAttribute.block.numberList) {
-      return ZefyrList(node: block);
-    } else if (blockStyle == NotusAttribute.block.quote) {
-      return ZefyrQuote(node: block);
-    }
 
-    throw UnimplementedError('Block format $blockStyle.');
+    throw UnimplementedError('Block format.');
   }
 
   void _updateSubscriptions([ZefyrEditableText oldWidget]) {

@@ -6,8 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:notus/notus.dart';
 
 import 'editable_box.dart';
-import 'horizontal_rule.dart';
-import 'image.dart';
+// import 'horizontal_rule.dart';
 import 'rich_text.dart';
 import 'scope.dart';
 import 'theme.dart';
@@ -50,15 +49,11 @@ class _RawZefyrLineState extends State<RawZefyrLine> {
     final theme = ZefyrTheme.of(context);
 
     Widget content;
-    if (widget.node.hasEmbed) {
-      content = buildEmbed(context, scope);
-    } else {
       assert(widget.style != null);
       content = ZefyrRichText(
         node: widget.node,
         text: buildText(context),
       );
-    }
 
     if (scope.isEditable) {
       content = EditableBox(
@@ -130,26 +125,11 @@ class _RawZefyrLineState extends State<RawZefyrLine> {
     TextStyle result = TextStyle();
     if (style.containsSame(NotusAttribute.bold)) {
       result = result.merge(theme.boldStyle);
+    }else if(style.containsSame(NotusAttribute.code)) {
+      result = result.merge(theme.codeStyle);
     }
-    if (style.containsSame(NotusAttribute.italic)) {
-      result = result.merge(theme.italicStyle);
-    }
-    if (style.contains(NotusAttribute.link)) {
-      result = result.merge(theme.linkStyle);
-    }
+
     return result;
   }
 
-  Widget buildEmbed(BuildContext context, ZefyrScope scope) {
-    EmbedNode node = widget.node.children.single;
-    EmbedAttribute embed = node.style.get(NotusAttribute.embed);
-
-    if (embed.type == EmbedType.horizontalRule) {
-      return ZefyrHorizontalRule(node: node);
-    } else if (embed.type == EmbedType.image) {
-      return ZefyrImage(node: node, delegate: scope.imageDelegate);
-    } else {
-      throw UnimplementedError('Unimplemented embed type ${embed.type}');
-    }
-  }
 }
