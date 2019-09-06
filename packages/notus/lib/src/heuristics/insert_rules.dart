@@ -88,10 +88,7 @@ class ResetLineFormatOnNewLineRule extends InsertRule {
 
     if (target.data.startsWith('\n')) {
       Map<String, dynamic> resetStyle;
-      if (target.attributes != null &&
-          target.attributes.containsKey(NotusAttribute.heading.key)) {
-        resetStyle = NotusAttribute.heading.unset.toJson();
-      }
+
       return new Delta()
         ..retain(index)
         ..insert('\n', target.attributes)
@@ -120,15 +117,12 @@ class AutoExitBlockRule extends InsertRule {
     DeltaIterator iter = new DeltaIterator(document);
     final previous = iter.skip(index);
     final target = iter.next();
-    final isInBlock = target.isNotPlain &&
-        target.attributes.containsKey(NotusAttribute.block.key);
-    if (isEmptyLine(previous, target) && isInBlock) {
+    if (isEmptyLine(previous, target) ) {
       // We reset block style even if this line is not the last one in it's
       // block which effectively splits the block into two.
       // TODO: For code blocks this should not split the block but allow inserting as many lines as needed.
       var attributes =
           target.attributes != null ? target.attributes : <String, dynamic>{};
-      attributes.addAll(NotusAttribute.block.unset.toJson());
       return new Delta()..retain(index)..retain(1, attributes);
     }
     return null;
@@ -152,18 +146,10 @@ class PreserveInlineStylesRule extends InsertRule {
     if (previous == null || previous.data.contains('\n')) return null;
 
     final attributes = previous.attributes;
-    final hasLink =
-        (attributes != null && attributes.containsKey(NotusAttribute.link.key));
-    if (!hasLink) {
-      return new Delta()
-        ..retain(index)
-        ..insert(text, attributes);
-    }
     // Special handling needed for inserts inside fragments with link attribute.
     // Link style should only be preserved if insert occurs inside the fragment.
     // Link style should NOT be preserved on the boundaries.
     var noLinkAttributes = previous.attributes;
-    noLinkAttributes.remove(NotusAttribute.link.key);
     final noLinkResult = new Delta()
       ..retain(index)
       ..insert(text, noLinkAttributes.isEmpty ? null : noLinkAttributes);
@@ -173,19 +159,7 @@ class PreserveInlineStylesRule extends InsertRule {
       return noLinkResult;
     }
     final nextAttributes = next.attributes ?? <String, dynamic>{};
-    if (!nextAttributes.containsKey(NotusAttribute.link.key)) {
-      // Next fragment is not styled as link.
-      return noLinkResult;
-    }
-    // We must make sure links are identical in previous and next operations.
-    if (attributes[NotusAttribute.link.key] ==
-        nextAttributes[NotusAttribute.link.key]) {
-      return new Delta()
-        ..retain(index)
-        ..insert(text, attributes);
-    } else {
-      return noLinkResult;
-    }
+   
   }
 }
 
@@ -216,10 +190,7 @@ class AutoFormatLinksRule extends InsertRule {
       final attributes = previous.attributes ?? <String, dynamic>{};
 
       // Do nothing if already formatted as link.
-      if (attributes.containsKey(NotusAttribute.link.key)) return null;
 
-      attributes
-          .addAll(NotusAttribute.link.fromString(link.toString()).toJson());
       return new Delta()
         ..retain(index - candidate.length)
         ..retain(candidate.length, attributes)
@@ -292,18 +263,7 @@ class PreserveBlockStyleOnPasteRule extends InsertRule {
 
     Map<String, dynamic> resetStyle;
     Map<String, dynamic> blockStyle;
-    if (lineStyle != null) {
-      if (lineStyle.containsKey(NotusAttribute.heading.key)) {
-        resetStyle = NotusAttribute.heading.unset.toJson();
-      }
-
-      if (lineStyle.containsKey(NotusAttribute.block.key)) {
-        blockStyle = <String, dynamic>{
-          NotusAttribute.block.key: lineStyle[NotusAttribute.block.key]
-        };
-      }
-    }
-
+  
     final lines = text.split('\n');
     Delta result = new Delta()..retain(index);
     for (int i = 0; i < lines.length; i++) {

@@ -6,7 +6,6 @@ import 'dart:math' as math;
 import 'package:quill_delta/quill_delta.dart';
 
 import 'attributes.dart';
-import 'block.dart';
 import 'leaf.dart';
 import 'node.dart';
 
@@ -31,19 +30,10 @@ class LineNode extends ContainerNode<LeafNode>
 
   /// Returns next [LineNode] or `null` if this is the last line in the document.
   LineNode get nextLine {
-    if (isLast) {
-      if (parent is BlockNode) {
-        if (parent.isLast) return null;
-        LineNode line = (parent.next is BlockNode)
-            ? (parent.next as BlockNode).first
-            : parent.next;
-        return line;
-      } else
-        return null;
-    } else {
-      LineNode line = (next is BlockNode) ? (next as BlockNode).first : next;
+
+      LineNode line = next;
       return line;
-    }
+    
   }
 
   /// Creates new empty [LineNode] with the same style.
@@ -78,21 +68,11 @@ class LineNode extends ContainerNode<LeafNode>
   /// Unwraps this line from it's parent [BlockNode].
   ///
   /// This method asserts if current [parent] of this line is not a [BlockNode].
-  void unwrap() {
-    assert(parent is BlockNode);
-    BlockNode block = parent;
-    block.unwrapLine(this);
-  }
 
   /// Wraps this line with new parent [block].
   ///
   /// This line can not be in a [BlockNode] when this method is called.
-  void wrap(BlockNode block) {
-    assert(parent != null && parent is! BlockNode);
-    insertAfter(block);
-    unlink();
-    block.add(this);
-  }
+
 
   /// Returns style for specified text range.
   ///
@@ -138,10 +118,6 @@ class LineNode extends ContainerNode<LeafNode>
     }
 
     result = result.mergeAll(this.style);
-    if (parent is BlockNode) {
-      BlockNode block = parent;
-      result = result.mergeAll(block.style);
-    }
 
     int remaining = length - local;
     if (remaining > 0) {
@@ -165,10 +141,6 @@ class LineNode extends ContainerNode<LeafNode>
         .map((text) => text.toDelta())
         .fold(new Delta(), (a, b) => a.concat(b));
     var attributes = style;
-    if (parent is BlockNode) {
-      BlockNode block = parent;
-      attributes = attributes.mergeAll(block.style);
-    }
     delta.insert('\n', attributes.toJson());
     return delta;
   }
@@ -206,7 +178,6 @@ class LineNode extends ContainerNode<LeafNode>
 
     // Reset our format and unwrap from a block if needed.
     clearStyle();
-    if (parent is BlockNode) unwrap();
 
     // Now we can apply new format and re-layout.
     _formatAndOptimize(style);
@@ -280,12 +251,6 @@ class LineNode extends ContainerNode<LeafNode>
       moveChildren(nextLine);
     }
 
-    if (isLFDeleted) {
-      // Now we can remove this line.
-      final block = parent; // remember reference before un-linking.
-      unlink();
-      block.optimize();
-    }
   }
 
   /// Formats this line and optimizes layout afterwards.
@@ -293,28 +258,9 @@ class LineNode extends ContainerNode<LeafNode>
     if (newStyle == null || newStyle.isEmpty) return;
 
     applyStyle(newStyle);
-    if (!newStyle.contains(NotusAttribute.block))
-      return; // no block-level changes
 
-    final blockStyle = newStyle.get(NotusAttribute.block);
-    if (parent is BlockNode) {
-      final parentStyle = (parent as BlockNode).style.get(NotusAttribute.block);
-      if (blockStyle == NotusAttribute.block.unset) {
-        unwrap();
-      } else if (blockStyle != parentStyle) {
-        unwrap();
-        BlockNode block = new BlockNode();
-        block.applyAttribute(blockStyle);
-        wrap(block);
-        block.optimize();
-      } // else the same style, no-op.
-    } else if (blockStyle != NotusAttribute.block.unset) {
       // Only wrap with a new block if this is not an unset
-      BlockNode block = new BlockNode();
-      block.applyAttribute(blockStyle);
-      wrap(block);
-      block.optimize();
-    }
+    
   }
 
   void _insertSafe(int index, String text, NotusStyle style) {

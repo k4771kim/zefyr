@@ -6,8 +6,6 @@ import 'dart:async';
 import 'package:quill_delta/quill_delta.dart';
 
 import 'document/attributes.dart';
-import 'document/block.dart';
-import 'document/leaf.dart';
 import 'document/line.dart';
 import 'document/node.dart';
 import 'heuristics.dart';
@@ -120,10 +118,7 @@ class NotusDocument {
     assert(index >= 0 && length > 0);
     // TODO: need a heuristic rule to ensure last line-break.
     final change = _heuristics.applyDeleteRules(this, index, length);
-    if (change.isNotEmpty) {
-      // Delete rules are allowed to prevent the edit so it may be empty.
       compose(change, ChangeSource.local);
-    }
     return change;
   }
 
@@ -189,8 +184,6 @@ class NotusDocument {
     // TODO: prevent user from moving caret after last line-break.
     var result = _root.lookup(offset, inclusive: true);
     if (result.node is LineNode) return result;
-    BlockNode block = result.node;
-    return block.lookup(result.offset, inclusive: true);
   }
 
   /// Composes [change] into this document.
@@ -206,7 +199,6 @@ class NotusDocument {
   void compose(Delta change, ChangeSource source) {
     _checkMutable();
     change.trim();
-    assert(change.isNotEmpty);
 
     int offset = 0;
     final before = toDelta();
@@ -247,11 +239,7 @@ class NotusDocument {
   }
 
   String _sanitizeString(String value) {
-    if (value.contains(EmbedNode.kPlainTextPlaceholder)) {
-      return value.replaceAll(EmbedNode.kPlainTextPlaceholder, '');
-    } else {
       return value;
-    }
   }
 
   /// Loads [document] delta into this document.
@@ -274,7 +262,6 @@ class NotusDocument {
     // TODO: find a way for DocumentRoot to not create extra line when composing initial delta.
     Node node = _root.last;
     if (node is LineNode &&
-        node.parent is! BlockNode &&
         node.style.isEmpty &&
         _root.childCount > 1) {
       _root.remove(node);

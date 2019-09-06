@@ -7,7 +7,6 @@ library notus;
 
 export 'src/document.dart';
 export 'src/document/attributes.dart';
-export 'src/document/block.dart';
 export 'src/document/leaf.dart';
 export 'src/document/line.dart';
 export 'src/document/node.dart';

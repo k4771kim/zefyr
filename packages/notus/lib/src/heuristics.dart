@@ -15,8 +15,6 @@ class NotusHeuristics {
   /// Default set of heuristic rules.
   static const NotusHeuristics fallback = NotusHeuristics(
     formatRules: [
-      FormatEmbedsRule(),
-      FormatLinkAtCaretPositionRule(),
       ResolveLineFormatRule(),
       ResolveInlineFormatRule(),
       // No need in catch-all rule here since the above rules cover all
